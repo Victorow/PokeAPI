@@ -1,0 +1,33 @@
+<div class="profile-modal-overlay" *ngIf="isVisible" (click)="onClose()">
+  <div class="profile-modal" (click)="$event.stopPropagation()">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <span class="avatar-icon">👤</span>
+      </div>
+      <div class="profile-info">
+        <h3 class="profile-name">{{ user?.nome || 'Usuário' }}</h3>
+        <p class="profile-email">{{ user?.email || '' }}</p>
+        <p class="profile-role" [class.admin]="user?.role === 'admin'">
+          {{ user?.role === 'admin' ? 'Administrador' : 'Usuário' }}
+        </p>
+      </div>
+      <button class="close-btn" (click)="onClose()">
+        ✕
+      </button>
+    </div>
+
+    <div class="profile-actions">
+      <button 
+        class="action-btn change-password-btn" 
+        (click)="togglePasswordForm()">
+        🔑
+        Trocar Senha
+      </button>
+      
+      <button class="action-btn logout-btn" (click)="onLogout()">
+        🚪
+        Sair
+      </button>
+    </div>
+  </div>
+</div>

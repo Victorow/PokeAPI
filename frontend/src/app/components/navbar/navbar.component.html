@@ -31,12 +31,28 @@
     </div>
 
     <div class="navbar-user">
-      <div class="user-info" *ngIf="currentUser">
-        <span class="user-name">{{ currentUser.nome }}</span>
-        <button class="btn-logout" (click)="logout()">Sair</button>
+      <div class="user-profile" *ngIf="currentUser" (click)="onProfileClick()">
+        <div class="profile-avatar">
+          <span class="avatar-icon">👤</span>
+        </div>
+        <div class="profile-info">
+          <span class="user-name">{{ currentUser.nome }}</span>
+          <span class="user-role" [class.admin]="currentUser.role === 'admin'">
+            {{ currentUser.role === 'admin' ? 'Admin' : 'Usuário' }}
+          </span>
+        </div>
+        <div class="profile-indicator">
+          <i class="fas fa-chevron-down"></i>
+        </div>
       </div>
     </div>
   </div>
 </nav>
-<!-- ... todo código anterior ... -->
+
+<!-- Modal de Perfil -->
+<app-profile-modal 
+  [isVisible]="showProfileModal" 
+  [user]="currentUser"
+  (close)="onProfileModalClose()">
+</app-profile-modal>
 

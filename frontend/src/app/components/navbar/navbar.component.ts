@@ -4,12 +4,13 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ModalService } from '../../services/modal.service';
 import { TeamStateService } from '../../services/team-state.service';
+import { ProfileModalComponent } from '../profile-modal/profile-modal.component';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProfileModalComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
@@ -17,6 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   currentUser: any = null;
   teamCount = 0;
   favoritosCount = 0;
+  showProfileModal = false;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -61,5 +63,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.router.navigate(['/login']);
       }
     });
+  }
+
+  onProfileClick(): void {
+    this.showProfileModal = true;
+  }
+
+  onProfileModalClose(): void {
+    this.showProfileModal = false;
   }
 }
