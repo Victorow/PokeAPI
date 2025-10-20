@@ -1,0 +1,95 @@
+<app-navbar></app-navbar>
+
+<div class="home-container">
+  <div class="header">
+    <img 
+      src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
+      alt="Pokébola" 
+      class="pokedex-icon"
+    />
+    <div class="header-content">
+      <h1>Pokédex Digital</h1>
+      <p>Explore o mundo dos Pokémon com nossa Pokédex interativa. Descubra informações detalhadas sobre cada criatura.</p>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <div class="input-wrapper">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Buscar" class="input-icon" />
+        <input
+          type="text"
+          [(ngModel)]="searchName"
+          placeholder="Buscar Pokémon por nome..."
+          class="search-input"
+          (keyup.enter)="onSearch()"
+        />
+      </div>
+      <button class="btn-search" (click)="onSearch()">
+        🔍 Buscar
+      </button>
+    </div>
+
+    <div class="filter-group">
+      <div class="input-wrapper">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png" alt="Geração" class="input-icon" />
+        <select [(ngModel)]="selectedGeneration" (change)="onGenerationChange()" class="select-generation">
+          <option value="">Todas as Gerações</option>
+          <option *ngFor="let gen of generations" [value]="gen">Geração {{ gen }}</option>
+        </select>
+      </div>
+      <button class="btn-clear" (click)="clearFilters()">
+        🔄 Limpar
+      </button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-item">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Total" class="stat-icon-img" />
+      <div class="stat-info">
+        <span class="stat-value">{{ totalPokemons }}</span>
+        <span class="stat-label">Total na Pokédex</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png" alt="Favoritos" class="stat-icon-img" />
+      <div class="stat-info">
+        <span class="stat-value">{{ getFavoritosCount() }}</span>
+        <span class="stat-label">Favoritos</span>
+      </div>
+    </div>
+    <div class="stat-item">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" alt="Equipe" class="stat-icon-img" />
+      <div class="stat-info">
+        <span class="stat-value">{{ getEquipeCount() }}/6</span>
+        <span class="stat-label">Equipe</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando Pokémons...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div class="pokemon-grid" *ngIf="!isLoading && pokemons.length > 0">
+    <app-pokemon-card
+      *ngFor="let pokemon of pokemons"
+      [pokemon]="pokemon"
+      (toggleFavorito)="toggleFavorito($event)"
+      (toggleEquipe)="toggleEquipe($event)"
+    ></app-pokemon-card>
+  </div>
+
+  <div class="pagination" *ngIf="!isLoading && pokemons.length >= limit">
+    <button class="btn-load-more" (click)="loadMore()">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png" alt="Mais" class="btn-icon" />
+      Carregar Mais Pokémons
+    </button>
+  </div>
+</div>

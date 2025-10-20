@@ -1,0 +1,66 @@
+<app-navbar></app-navbar>
+
+<div class="reset-senha-container">
+  <div class="reset-card">
+    <div class="card-header">
+      <div class="header-icon">🔑</div>
+      <h1>Resetar Senha</h1>
+      <p>Altere sua senha de acesso</p>
+    </div>
+
+    <form (ngSubmit)="onResetSenha()" class="reset-form">
+      <div class="form-group">
+        <label for="senhaAtual">
+          <span class="label-icon">🔒</span>
+          Senha Atual
+        </label>
+        <input
+          type="password"
+          id="senhaAtual"
+          [(ngModel)]="senhaAtual"
+          name="senhaAtual"
+          placeholder="Digite sua senha atual"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="novaSenha">
+          <span class="label-icon">🔑</span>
+          Nova Senha
+        </label>
+        <input
+          type="password"
+          id="novaSenha"
+          [(ngModel)]="novaSenha"
+          name="novaSenha"
+          placeholder="Digite sua nova senha"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmarNovaSenha">
+          <span class="label-icon">✅</span>
+          Confirmar Nova Senha
+        </label>
+        <input
+          type="password"
+          id="confirmarNovaSenha"
+          [(ngModel)]="confirmarNovaSenha"
+          name="confirmarNovaSenha"
+          placeholder="Confirme sua nova senha"
+          required
+        />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" [disabled]="isLoading">
+          {{ isLoading ? '⏳ Processando...' : '🔑 Alterar Senha' }}
+        </button>
+        <a routerLink="/home" class="btn-cancel">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+

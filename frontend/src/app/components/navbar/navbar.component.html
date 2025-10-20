@@ -1,0 +1,42 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <div class="pokeball-wrapper">
+        <img 
+          src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" 
+          alt="Pokébola" 
+          class="pokeball"
+        />
+      </div>
+      <h1>Pokédex Digital</h1>
+    </div>
+
+    <div class="navbar-menu">
+      <a routerLink="/home" routerLinkActive="active" class="nav-item">
+        <span class="icon">🏠</span>
+        <span>Pokémon</span>
+      </a>
+      <a routerLink="/favoritos" routerLinkActive="active" class="nav-item">
+        <span class="icon">⭐</span>
+        <span>Favoritos</span>
+      </a>
+      <a routerLink="/equipe" routerLinkActive="active" class="nav-item">
+        <span class="icon">⚔️</span>
+        <span>Equipe</span>
+      </a>
+      <a routerLink="/gestao-usuarios" routerLinkActive="active" class="nav-item" *ngIf="isAdmin()">
+        <span class="icon">👥</span>
+        <span>Usuários</span>
+      </a>
+    </div>
+
+    <div class="navbar-user">
+      <div class="user-info" *ngIf="currentUser">
+        <span class="user-name">{{ currentUser.nome }}</span>
+        <button class="btn-logout" (click)="logout()">Sair</button>
+      </div>
+    </div>
+  </div>
+</nav>
+<!-- ... todo código anterior ... -->
+

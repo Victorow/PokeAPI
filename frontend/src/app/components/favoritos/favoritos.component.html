@@ -1,0 +1,52 @@
+<app-navbar></app-navbar>
+
+<div class="favoritos-container">
+  <div class="header">
+    <img 
+      src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png" 
+      alt="Favoritos" 
+      class="header-icon"
+    />
+    <div class="header-content">
+      <h1>⭐ Meus Favoritos</h1>
+      <p>Aqui estão todos os Pokémon que você marcou como favoritos</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando favoritos...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && favoritos.length === 0" class="empty-state">
+    <div class="empty-icon">⭐</div>
+    <h2>Nenhum favorito ainda</h2>
+    <p>Adicione seus Pokémon favoritos para vê-los aqui!</p>
+    <a routerLink="/home" class="btn-goto-home">Explorar Pokémons</a>
+  </div>
+
+  <div class="favoritos-stats" *ngIf="!isLoading && favoritos.length > 0">
+    <div class="stat-card">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png" alt="Favoritos" class="stat-icon-img" />
+      <div class="stat-info">
+        <span class="stat-value">{{ favoritos.length }}</span>
+        <span class="stat-label">Favoritos</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="favoritos-grid" *ngIf="!isLoading && favoritos.length > 0">
+    <app-pokemon-card
+      *ngFor="let pokemon of favoritos"
+      [pokemon]="pokemon"
+      (toggleFavorito)="toggleFavorito($event)"
+      (toggleEquipe)="toggleEquipe($event)"
+    ></app-pokemon-card>
+  </div>
+</div>
+<!-- ... todo código anterior ... -->
+

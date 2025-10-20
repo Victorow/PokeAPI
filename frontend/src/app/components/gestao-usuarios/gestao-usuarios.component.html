@@ -1,0 +1,67 @@
+<app-navbar></app-navbar>
+
+<div class="gestao-container">
+  <div class="header">
+    <h1>👥 Gestão de Usuários</h1>
+    <p>Visualize e gerencie os usuários cadastrados no sistema</p>
+  </div>
+
+  <div class="actions-bar">
+    <div class="info">
+      <span class="icon">👤</span>
+      <span class="text">Total de usuários: <strong>{{ usuarios.length }}</strong></span>
+    </div>
+    <a routerLink="/reset-senha" class="btn-reset-senha">
+      🔑 Resetar Senha
+    </a>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando usuários...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && usuarios.length === 0" class="empty-state">
+    <div class="empty-icon">👥</div>
+    <h2>Nenhum usuário cadastrado</h2>
+    <p>Ainda não há usuários no sistema</p>
+  </div>
+
+  <div class="usuarios-table" *ngIf="!isLoading && usuarios.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Login</th>
+          <th>Email</th>
+          <th class="actions-column">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let usuario of usuarios">
+          <td class="id-column">{{ usuario.id }}</td>
+          <td class="nome-column">
+            <div class="user-info">
+              <span class="user-avatar">👤</span>
+            </div>
+          </td>
+          <td>{{ usuario.login }}</td>
+          <td>{{ usuario.email }}</td>
+          <td class="actions-column">
+            <button 
+              class="btn-delete" 
+              (click)="deletarUsuario(usuario.id, usuario.nome)"
+            >
+              🗑️ Deletar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

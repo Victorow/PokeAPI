@@ -1,0 +1,69 @@
+<app-navbar></app-navbar>
+
+<div class="equipe-container">
+  <div class="header">
+    <img 
+      src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" 
+      alt="Equipe" 
+      class="header-icon"
+    />
+    <div class="header-content">
+      <h1>⚔️ Minha Equipe de Batalha</h1>
+      <p>Monte sua equipe com até 6 Pokémon para batalhas épicas!</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando equipe...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div class="equipe-stats" *ngIf="!isLoading">
+    <div class="stat-card">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" alt="Equipe" class="stat-icon-img" />
+      <div class="stat-info">
+        <span class="stat-value">{{ equipe.length }}/{{ maxEquipe }}</span>
+        <span class="stat-label">Equipe de Batalha</span>
+      </div>
+    </div>
+
+    <div class="stat-card" [class.complete]="equipe.length === maxEquipe">
+      <span class="stat-icon-emoji">{{ equipe.length === maxEquipe ? '✅' : '📝' }}</span>
+      <div class="stat-info">
+        <span class="stat-value">{{ equipe.length === maxEquipe ? 'Completa!' : 'Incompleta' }}</span>
+        <span class="stat-label">Status da Equipe</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && equipe.length === 0" class="empty-state">
+    <div class="empty-icon">⚔️</div>
+    <h2>Sua equipe está vazia</h2>
+    <p>Monte sua equipe de batalha com até 6 Pokémon!</p>
+    <a routerLink="/home" class="btn-goto-home">Escolher Pokémons</a>
+  </div>
+
+  <div class="equipe-grid" *ngIf="!isLoading">
+    <!-- Pokémons na equipe -->
+    <app-pokemon-card
+      *ngFor="let pokemon of equipe"
+      [pokemon]="pokemon"
+      (toggleFavorito)="toggleFavorito($event)"
+      (toggleEquipe)="toggleEquipe($event)"
+    ></app-pokemon-card>
+
+    <!-- Slots vazios -->
+    <div class="equipe-slot empty" *ngFor="let slot of getSlotsVazios()">
+      <div class="empty-slot">
+        <span class="empty-icon-slot">➕</span>
+        <p>Slot Vazio</p>
+        <a routerLink="/home" class="btn-add-pokemon">Adicionar Pokémon</a>
+      </div>
+    </div>
+  </div>
+</div>
+

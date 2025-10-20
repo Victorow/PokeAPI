@@ -1,0 +1,64 @@
+<div class="pokemon-card" [attr.data-type]="getFirstType()">
+  <div class="card-header">
+    <span class="pokemon-id">#{{ pokemon.id.toString().padStart(3, '0') }}</span>
+    <div class="card-badges">
+      <span class="badge badge-favorito" [class.active]="pokemon.favorito" title="Favorito">
+        {{ pokemon.favorito ? '⭐' : '☆' }}
+      </span>
+      <span class="badge badge-equipe" [class.active]="pokemon.equipe" title="Equipe">
+        {{ pokemon.equipe ? '⚔️' : '🗡️' }}
+      </span>
+    </div>
+  </div>
+
+  <div class="card-image">
+    <img [src]="pokemon.imagem" [alt]="pokemon.nome" />
+  </div>
+
+  <div class="card-body">
+    <h3 class="pokemon-name">{{ pokemon.nome | titlecase }}</h3>
+    
+    <!-- TIPOS DO POKÉMON -->
+    <div class="pokemon-types" *ngIf="pokemon.tipos && pokemon.tipos.length > 0">
+      <span 
+        *ngFor="let tipo of pokemon.tipos" 
+        class="type-badge"
+        [attr.data-type]="tipo.type.name"
+      >
+        {{ getTypeName(tipo.type.name) }}
+      </span>
+    </div>
+
+    <!-- STATS DO POKÉMON (HP, Ataque, Defesa) -->
+    <div class="card-stats" *ngIf="pokemon.stats && pokemon.stats.length > 0">
+      <div class="stat" *ngFor="let stat of getMainStats()">
+        <span class="stat-label">{{ getStatName(stat.stat.name) }}</span>
+        <div class="stat-bar">
+          <div class="stat-fill" [style.width.%]="getStatPercentage(stat.base_stat)"></div>
+        </div>
+        <span class="stat-value">{{ stat.base_stat }}</span>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <button 
+        class="btn-action btn-favorito" 
+        [class.active]="pokemon.favorito"
+        (click)="onToggleFavorito()"
+        title="Adicionar aos favoritos"
+      >
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png" alt="Favorito" class="btn-icon" />
+        {{ pokemon.favorito ? 'Favorito' : 'Favoritar' }}
+      </button>
+      <button 
+        class="btn-action btn-equipe" 
+        [class.active]="pokemon.equipe"
+        (click)="onToggleEquipe()"
+        title="Adicionar à equipe"
+      >
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" alt="Equipe" class="btn-icon" />
+        {{ pokemon.equipe ? 'Na Equipe' : 'Equipe' }}
+      </button>
+    </div>
+  </div>
+</div>

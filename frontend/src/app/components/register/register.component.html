@@ -1,0 +1,106 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <img 
+        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" 
+        alt="Ultra Ball" 
+        class="pokeball-icon"
+      />
+      <h1>Criar Conta</h1>
+      <p>Junte-se à maior Pokédex digital do mundo!</p>
+    </div>
+
+    <form (ngSubmit)="onRegister()" class="register-form">
+      <div class="form-group">
+        <label for="nome">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png" alt="Nome" class="input-icon" />
+          Nome Completo
+        </label>
+        <input
+          type="text"
+          id="nome"
+          [(ngModel)]="nome"
+          name="nome"
+          placeholder="Digite seu nome completo"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="login">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Login" class="input-icon" />
+          Login
+        </label>
+        <input
+          type="text"
+          id="login"
+          [(ngModel)]="login"
+          name="login"
+          placeholder="Escolha um login"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-share.png" alt="Email" class="input-icon" />
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="seu@email.com"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="senha">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" alt="Senha" class="input-icon" />
+          Senha
+        </label>
+        <input
+          type="password"
+          id="senha"
+          [(ngModel)]="senha"
+          name="senha"
+          placeholder="Mínimo 6 caracteres"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmarSenha">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" alt="Confirmar" class="input-icon" />
+          Confirmar Senha
+        </label>
+        <input
+          type="password"
+          id="confirmarSenha"
+          [(ngModel)]="confirmarSenha"
+          name="confirmarSenha"
+          placeholder="Digite a senha novamente"
+          required
+        />
+      </div>
+
+      <div *ngIf="errorMessage" class="message error-message">
+        ⚠️ {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="message success-message">
+        ✅ {{ successMessage }}
+      </div>
+
+      <button type="submit" class="btn-register" [disabled]="isLoading">
+        {{ isLoading ? 'Cadastrando...' : '⚡ Criar Conta' }}
+      </button>
+
+      <div class="register-footer">
+        <p>Já tem uma conta? <a routerLink="/login" class="link-login">Fazer Login</a></p>
+      </div>
+    </form>
+  </div>
+</div>

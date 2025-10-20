@@ -1,0 +1,57 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <img 
+        src="https://media.giphy.com/media/W04QVzelTHsNW/giphy.gif" 
+        alt="Pokébola" 
+        class="pokeball-icon"
+      />
+      <h1>Pokédex Digital</h1>
+      <p>Faça login para acessar sua coleção</p>
+    </div>
+
+    <form (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label for="login">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Treinador" class="input-icon" />
+          Login
+        </label>
+        <input
+          type="text"
+          id="login"
+          [(ngModel)]="login"
+          name="login"
+          placeholder="Digite seu login"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="senha">
+          <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png" alt="Senha" class="input-icon" />
+          Senha
+        </label>
+        <input
+          type="password"
+          id="senha"
+          [(ngModel)]="senha"
+          name="senha"
+          placeholder="Digite sua senha"
+          required
+        />
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        ⚠️ {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="isLoading">
+        {{ isLoading ? 'Entrando...' : '⚡ Entrar' }}
+      </button>
+
+      <div class="login-footer">
+        <p>Não tem uma conta? <a routerLink="/register" class="link-register">Criar Conta</a></p>
+      </div>
+    </form>
+  </div>
+</div>

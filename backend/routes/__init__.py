@@ -1,0 +1,1 @@
+# Arquivo vazio para transformar routes em um pacote Python
