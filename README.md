@@ -253,17 +253,6 @@ JWT_SECRET_KEY=chave-super-secreta
 DATABASE_URL=postgresql://user:pass@host:port/db
 ```
 
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
-3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## 👨‍💻 Autor
 
@@ -274,10 +263,5 @@ Desenvolvido como projeto de teste técnico, demonstrando conhecimento em:
 - Containerização
 - Boas práticas de desenvolvimento
 
-## 📞 Suporte
-
-Para dúvidas ou suporte, entre em contato através dos issues do GitHub.
-
----
 
 **🎯 Projeto completo e funcional, pronto para produção!**
