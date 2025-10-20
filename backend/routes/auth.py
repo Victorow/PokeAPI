@@ -132,3 +132,53 @@ def change_password():
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Erro interno do servidor'}), 500
+
+@bp_auth.route('/admin/reset-password', methods=['POST'])
+@jwt_required()
+def admin_reset_password():
+    """Admin reseta a senha de outro usuário"""
+    data = request.get_json()
+    admin_id = get_jwt_identity()
+    
+    if not data or not all(key in data for key in ['userId', 'novaSenha']):
+        return jsonify({'msg': 'Campos obrigatórios faltando'}), 400
+    
+    # Validações de entrada
+    if not isinstance(data['userId'], int) or not isinstance(data['novaSenha'], str):
+        return jsonify({'msg': 'Dados inválidos'}), 400
+    
+    if len(data['novaSenha']) < 6 or len(data['novaSenha']) > 200:
+        return jsonify({'msg': 'Nova senha deve ter entre 6 e 200 caracteres'}), 400
+    
+    try:
+        # Verificar se o usuário logado é admin
+        admin_user = Usuario.query.get(admin_id)
+        if not admin_user or admin_user.Role != 'admin':
+            return jsonify({'msg': 'Acesso negado. Apenas administradores podem resetar senhas.'}), 403
+        
+        # Buscar o usuário alvo
+        target_user = Usuario.query.get(data['userId'])
+        if not target_user:
+            return jsonify({'msg': 'Usuário não encontrado'}), 404
+        
+        # Admin não pode resetar sua própria senha por esta rota
+        if target_user.IDUsuario == admin_id:
+            return jsonify({'msg': 'Use a funcionalidade de alteração de senha para alterar sua própria senha'}), 400
+        
+        # Atualizar senha
+        target_user.Senha = generate_password_hash(data['novaSenha'])
+        db.session.commit()
+        
+        return jsonify({
+            'msg': f'Senha do usuário "{target_user.Nome}" foi resetada com sucesso!',
+            'usuario': {
+                'id': target_user.IDUsuario,
+                'nome': target_user.Nome,
+                'login': target_user.Login,
+                'email': target_user.Email
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'msg': 'Erro interno do servidor'}), 500

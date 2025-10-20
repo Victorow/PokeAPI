@@ -73,7 +73,9 @@ export class RegisterComponent {
       },
       error: (error) => {
         console.error('Erro no cadastro:', error);
-        this.errorMessage = error.error?.msg || 'Erro ao realizar cadastro';
+        const errorMsg = error.error?.msg || 'Erro ao realizar cadastro';
+        this.errorMessage = errorMsg;
+        this.modalService.showError(errorMsg);
         this.isLoading = false;
       }
     });

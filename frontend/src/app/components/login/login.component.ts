@@ -38,7 +38,9 @@ export class LoginComponent {
       },
       error: (error) => {
         console.error('Erro no login:', error);
-        this.errorMessage = error.error?.msg || 'Login ou senha inválidos';
+        const errorMsg = error.error?.msg || 'Login ou senha inválidos';
+        this.errorMessage = errorMsg;
+        this.modalService.showError(errorMsg);
         this.isLoading = false;
       },
       complete: () => {

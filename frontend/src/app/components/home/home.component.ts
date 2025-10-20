@@ -59,11 +59,17 @@ export class HomeComponent implements OnInit, OnDestroy {
           next: (favoritosData) => {
             this.teamStateService.syncWithServer(teamData, favoritosData);
           },
-          error: (error) => console.error('Erro ao carregar favoritos:', error)
+          error: (error) => {
+            console.error('Erro ao carregar favoritos:', error);
+            this.modalService.showError('Erro ao carregar favoritos. Tente novamente.');
+          }
         });
         this.subscriptions.push(favoritosSub);
       },
-      error: (error) => console.error('Erro ao carregar equipe:', error)
+      error: (error) => {
+        console.error('Erro ao carregar equipe:', error);
+        this.modalService.showError('Erro ao carregar equipe. Tente novamente.');
+      }
     });
     this.subscriptions.push(teamSub);
   }
@@ -109,7 +115,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Erro ao carregar pokémons:', error);
-        this.errorMessage = 'Erro ao carregar pokémons. Tente novamente.';
+        const errorMsg = error.error?.msg || 'Erro ao carregar pokémons. Tente novamente.';
+        this.errorMessage = errorMsg;
+        this.modalService.showError(errorMsg);
         this.isLoading = false;
       }
     });
@@ -164,7 +172,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             },
             error: (error) => {
               console.error('Erro ao remover favorito:', error);
-              this.modalService.showError('Erro ao remover dos favoritos');
+              const errorMsg = error.error?.msg || 'Erro ao remover dos favoritos';
+              this.modalService.showError(errorMsg);
             }
           });
         }
@@ -178,7 +187,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Erro ao adicionar favorito:', error);
-          this.modalService.showError('Erro ao adicionar aos favoritos');
+          const errorMsg = error.error?.msg || 'Erro ao adicionar aos favoritos';
+          this.modalService.showError(errorMsg);
         }
       });
     }
@@ -207,7 +217,8 @@ export class HomeComponent implements OnInit, OnDestroy {
             },
             error: (error) => {
               console.error('Erro ao remover da equipe:', error);
-              this.modalService.showError('Erro ao remover da equipe');
+              const errorMsg = error.error?.msg || 'Erro ao remover da equipe';
+              this.modalService.showError(errorMsg);
             }
           });
         }
@@ -221,8 +232,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Erro ao adicionar à equipe:', error);
-          const msg = error.error?.msg || 'Equipe completa! Máximo de 6 Pokémon.';
-          this.modalService.showError(msg);
+          const errorMsg = error.error?.msg || 'Equipe completa! Máximo de 6 Pokémon.';
+          this.modalService.showError(errorMsg);
         }
       });
     }

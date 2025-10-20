@@ -74,7 +74,35 @@ export class GestaoUsuariosComponent implements OnInit {
           },
           error: (error) => {
             console.error('Erro ao deletar usuário:', error);
-            this.modalService.showError('Não foi possível excluir o usuário. Tente novamente.');
+            const errorMsg = error.error?.msg || 'Não foi possível excluir o usuário. Tente novamente.';
+            this.modalService.showError(errorMsg);
+          }
+        });
+      }
+    });
+  }
+
+  resetarSenha(id: number, nome: string): void {
+    if (id === this.currentUser?.id) {
+      this.modalService.showError('Use a funcionalidade "Resetar Senha" no menu para alterar sua própria senha.');
+      return;
+    }
+
+    this.modalService.showConfirm(
+      `Deseja resetar a senha do usuário "${nome}"? A nova senha será "123456".`,
+      'warning',
+      'Sim, resetar',
+      'Cancelar'
+    ).subscribe((result: boolean) => {
+      if (result) {
+        this.authService.adminResetPassword(id, '123456').subscribe({
+          next: (response) => {
+            this.modalService.showSuccess(`Senha do usuário "${nome}" foi resetada com sucesso! Nova senha: 123456`);
+          },
+          error: (error) => {
+            console.error('Erro ao resetar senha:', error);
+            const errorMsg = error.error?.msg || 'Não foi possível resetar a senha. Tente novamente.';
+            this.modalService.showError(errorMsg);
           }
         });
       }

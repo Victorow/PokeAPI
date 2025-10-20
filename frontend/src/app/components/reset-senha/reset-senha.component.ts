@@ -71,11 +71,13 @@ export class ResetSenhaComponent {
           this.router.navigate(['/home']);
         }, 1500);
       },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Erro ao alterar senha:', error);
-        this.errorMessage = error.error?.msg || 'Erro ao alterar senha. Tente novamente.';
-      }
+          error: (error) => {
+            this.isLoading = false;
+            console.error('Erro ao alterar senha:', error);
+            const errorMsg = error.error?.msg || 'Erro ao alterar senha. Tente novamente.';
+            this.errorMessage = errorMsg;
+            this.modalService.showError(errorMsg);
+          }
     });
   }
 
