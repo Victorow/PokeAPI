@@ -11,8 +11,9 @@ POKEAPI_GENERATION_URL = 'https://pokeapi.co/api/v2/generation'
 @bp_pokemon.route('', methods=['GET'])
 @jwt_required()
 def listar_pokemons():
-    """Lista pokémons com filtros de nome, geração, limit e offset"""
+    """Lista pokémons com filtros de nome, ID, geração, limit e offset"""
     nome = request.args.get('nome')
+    pokemon_id = request.args.get('id')
     geracao = request.args.get('geracao')
     
     # Validação e sanitização de parâmetros
@@ -29,6 +30,9 @@ def listar_pokemons():
     # Validação de entrada para filtros
     if nome and (len(nome) > 50 or not isinstance(nome, str)):
         return jsonify({'msg': 'Nome inválido'}), 400
+    
+    if pokemon_id and (not pokemon_id.isdigit() or int(pokemon_id) < 1 or int(pokemon_id) > 1025):
+        return jsonify({'msg': 'ID inválido. Deve ser um número entre 1 e 1025'}), 400
     
     if geracao and (not geracao.isdigit() or int(geracao) < 1 or int(geracao) > 9):
         return jsonify({'msg': 'Geração inválida'}), 400
@@ -74,6 +78,15 @@ def listar_pokemons():
                 poke_data = poke_resp.json()
                 result.append(enrich(poke_data))
         return jsonify(result), 200
+    
+    # Filtro por ID específico
+    if pokemon_id:
+        poke_resp = requests.get(f"{POKEAPI_URL}/{pokemon_id}")
+        if poke_resp.status_code == 200:
+            poke_data = poke_resp.json()
+            return jsonify([enrich(poke_data)]), 200
+        else:
+            return jsonify({'msg': 'Pokémon não encontrado com este ID'}), 404
     
     # Filtro por nome (busca parcial)
     if nome:

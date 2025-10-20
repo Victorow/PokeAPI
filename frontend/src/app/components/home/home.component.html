@@ -25,6 +25,18 @@
           (keyup.enter)="onSearch()"
         />
       </div>
+      <div class="input-wrapper">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="ID" class="input-icon" />
+        <input
+          type="number"
+          [(ngModel)]="searchId"
+          placeholder="Buscar por ID (1-1025)..."
+          class="search-input"
+          min="1"
+          max="1025"
+          (keyup.enter)="onSearch()"
+        />
+      </div>
       <button class="btn-search" (click)="onSearch()">
         🔍 Buscar
       </button>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { AuthService } from '../../services/auth.service';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-reset-senha',
@@ -22,7 +23,8 @@ export class ResetSenhaComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private modalService: ModalService
   ) {}
 
   onResetSenha(): void {
@@ -56,16 +58,25 @@ export class ResetSenhaComponent {
       novaSenha: this.novaSenha
     };
 
-    // Simulação - ajuste quando tiver a rota no backend
-    setTimeout(() => {
-      this.isLoading = false;
-      this.successMessage = 'Senha alterada com sucesso!';
-      this.limparCampos();
-      
-      setTimeout(() => {
-        this.router.navigate(['/home']);
-      }, 2000);
-    }, 1000);
+    this.authService.changePassword(resetData).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.limparCampos();
+        
+        // Mostrar modal de confirmação
+        this.modalService.showSuccess('Senha alterada com sucesso!');
+        
+        // Redirecionar após um pequeno delay
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 1500);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        console.error('Erro ao alterar senha:', error);
+        this.errorMessage = error.error?.msg || 'Erro ao alterar senha. Tente novamente.';
+      }
+    });
   }
 
   limparCampos(): void {

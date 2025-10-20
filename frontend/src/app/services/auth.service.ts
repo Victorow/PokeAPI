@@ -65,4 +65,13 @@ export class AuthService {
   getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  changePassword(passwordData: { senhaAtual: string; novaSenha: string }): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.getToken()}`
+    });
+    
+    return this.http.post(`${this.apiUrl}/auth/change-password`, passwordData, { headers });
+  }
 }

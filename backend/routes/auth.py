@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from models import db, Usuario
 
 bp_auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -89,6 +89,46 @@ def register():
                 'email': novo_usuario.Email
             }
         }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'msg': 'Erro interno do servidor'}), 500
+
+@bp_auth.route('/change-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    """Altera a senha do usuário logado"""
+    
+    data = request.get_json()
+    user_id = get_jwt_identity()
+    
+    if not data or not all(key in data for key in ['senhaAtual', 'novaSenha']):
+        return jsonify({'msg': 'Campos obrigatórios faltando'}), 400
+    
+    # Validações de entrada
+    if not isinstance(data['senhaAtual'], str) or not isinstance(data['novaSenha'], str):
+        return jsonify({'msg': 'Dados inválidos'}), 400
+    
+    if len(data['novaSenha']) < 6 or len(data['novaSenha']) > 200:
+        return jsonify({'msg': 'Nova senha deve ter entre 6 e 200 caracteres'}), 400
+    
+    if data['senhaAtual'] == data['novaSenha']:
+        return jsonify({'msg': 'A nova senha deve ser diferente da senha atual'}), 400
+    
+    try:
+        user = Usuario.query.get(user_id)
+        if not user:
+            return jsonify({'msg': 'Usuário não encontrado'}), 404
+        
+        # Verificar senha atual
+        if not check_password_hash(user.Senha, data['senhaAtual']):
+            return jsonify({'msg': 'Senha atual incorreta'}), 400
+        
+        # Atualizar senha
+        user.Senha = generate_password_hash(data['novaSenha'])
+        db.session.commit()
+        
+        return jsonify({'msg': 'Senha alterada com sucesso!'}), 200
+        
     except Exception as e:
         db.session.rollback()
         return jsonify({'msg': 'Erro interno do servidor'}), 500

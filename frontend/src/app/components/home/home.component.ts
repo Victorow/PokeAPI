@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Filtros
   searchName = '';
+  searchId = '';
   selectedGeneration = '';
   generations = ['1', '2', '3', '4', '5', '6', '7', '8'];
 
@@ -77,6 +78,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       filters.nome = this.searchName;
     }
     
+    if (this.searchId) {
+      filters.id = this.searchId;
+    }
+    
     if (this.selectedGeneration) {
       filters.geracao = this.selectedGeneration;
     }
@@ -122,6 +127,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   clearFilters(): void {
     this.searchName = '';
+    this.searchId = '';
     this.selectedGeneration = '';
     this.offset = 0;
     this.loadPokemons();
