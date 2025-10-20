@@ -6,6 +6,58 @@ import sqlite3
 import os
 import sys
 
+def create_tables_if_not_exist(cursor):
+    """Cria as tabelas se elas não existirem"""
+    # Verificar se a tabela usuario existe
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='usuario'")
+    if not cursor.fetchone():
+        print("INFO: Criando tabela 'usuario'...")
+        cursor.execute("""
+            CREATE TABLE usuario (
+                IDUsuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                Nome VARCHAR(100) NOT NULL,
+                Login VARCHAR(100) UNIQUE NOT NULL,
+                Email VARCHAR(100) UNIQUE NOT NULL,
+                Senha VARCHAR(200) NOT NULL,
+                Role VARCHAR(20) DEFAULT 'user' NOT NULL,
+                DtInclusao DATETIME DEFAULT CURRENT_TIMESTAMP,
+                DtAlteracao DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        print("INFO: Tabela 'usuario' criada com sucesso!")
+    
+    # Verificar se a tabela tipopokemon existe
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tipopokemon'")
+    if not cursor.fetchone():
+        print("INFO: Criando tabela 'tipopokemon'...")
+        cursor.execute("""
+            CREATE TABLE tipopokemon (
+                IDTipoPokemon INTEGER PRIMARY KEY AUTOINCREMENT,
+                Descricao VARCHAR(50) NOT NULL
+            )
+        """)
+        print("INFO: Tabela 'tipopokemon' criada com sucesso!")
+    
+    # Verificar se a tabela pokemonusuario existe
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='pokemonusuario'")
+    if not cursor.fetchone():
+        print("INFO: Criando tabela 'pokemonusuario'...")
+        cursor.execute("""
+            CREATE TABLE pokemonusuario (
+                IDPokemonUsuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                IDUsuario INTEGER NOT NULL,
+                IDTipoPokemon INTEGER NOT NULL,
+                Codigo VARCHAR(50) NOT NULL,
+                ImagemUrl VARCHAR(200),
+                Nome VARCHAR(100) NOT NULL,
+                GrupoBatalha BOOLEAN DEFAULT 0,
+                Favorito BOOLEAN DEFAULT 0,
+                FOREIGN KEY (IDUsuario) REFERENCES usuario (IDUsuario),
+                FOREIGN KEY (IDTipoPokemon) REFERENCES tipopokemon (IDTipoPokemon)
+            )
+        """)
+        print("INFO: Tabela 'pokemonusuario' criada com sucesso!")
+
 def migrate_database():
     """Migra o banco de dados adicionando a coluna Role se necessário"""
     db_path = '/app/instance/pokeapi.db'
@@ -18,6 +70,10 @@ def migrate_database():
     cursor = conn.cursor()
     
     try:
+        # Primeiro, criar as tabelas se elas não existirem
+        create_tables_if_not_exist(cursor)
+        conn.commit()
+        
         # Verificar se a coluna Role já existe
         cursor.execute("PRAGMA table_info(usuario)")
         columns = [column[1] for column in cursor.fetchall()]
