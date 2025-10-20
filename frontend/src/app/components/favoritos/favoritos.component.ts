@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
 import { PokemonService } from '../../services/pokemon.service';
 import { ModalService } from '../../services/modal.service';
+import { TeamStateService } from '../../services/team-state.service';
 import { Pokemon } from '../../models/pokemon.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-favoritos',
@@ -14,18 +16,24 @@ import { Pokemon } from '../../models/pokemon.model';
   templateUrl: './favoritos.component.html',
   styleUrls: ['./favoritos.component.css']
 })
-export class FavoritosComponent implements OnInit {
+export class FavoritosComponent implements OnInit, OnDestroy {
   favoritos: Pokemon[] = [];
   isLoading = false;
   errorMessage = '';
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private pokemonService: PokemonService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private teamStateService: TeamStateService
   ) {}
 
   ngOnInit(): void {
     this.loadFavoritos();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   loadFavoritos(): void {
@@ -72,6 +80,7 @@ export class FavoritosComponent implements OnInit {
         this.pokemonService.removeFavorito(pokemon.nome).subscribe({
           next: () => {
             this.favoritos = this.favoritos.filter(p => p.nome !== pokemon.nome);
+            this.teamStateService.removeFromFavoritos(pokemon.nome);
             this.modalService.showSuccess(`${pokemon.nome} removido dos favoritos!`);
           },
           error: (error) => {
@@ -93,6 +102,7 @@ export class FavoritosComponent implements OnInit {
     this.pokemonService.addEquipe(request).subscribe({
       next: () => {
         pokemon.equipe = true;
+        this.teamStateService.addToTeam(pokemon.nome);
         this.modalService.showSuccess(`${pokemon.nome} adicionado à equipe!`);
       },
       error: (error) => {

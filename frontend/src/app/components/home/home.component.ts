@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
 import { PokemonService } from '../../services/pokemon.service';
 import { ModalService } from '../../services/modal.service';
+import { TeamStateService } from '../../services/team-state.service';
 import { Pokemon, AddPokemonRequest } from '../../models/pokemon.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +16,7 @@ import { Pokemon, AddPokemonRequest } from '../../models/pokemon.model';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   pokemons: Pokemon[] = [];
   filteredPokemons: Pokemon[] = [];
   isLoading = false;
@@ -30,13 +32,39 @@ export class HomeComponent implements OnInit {
   limit = 20;
   offset = 0;
 
+  // Subscriptions
+  private subscriptions: Subscription[] = [];
+
   constructor(
     private pokemonService: PokemonService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private teamStateService: TeamStateService
   ) {}
 
   ngOnInit(): void {
     this.loadPokemons();
+    this.loadTeamAndFavoritos();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  loadTeamAndFavoritos(): void {
+    // Carregar equipe e favoritos do servidor para sincronizar
+    const teamSub = this.pokemonService.getEquipe().subscribe({
+      next: (teamData) => {
+        const favoritosSub = this.pokemonService.getFavoritos().subscribe({
+          next: (favoritosData) => {
+            this.teamStateService.syncWithServer(teamData, favoritosData);
+          },
+          error: (error) => console.error('Erro ao carregar favoritos:', error)
+        });
+        this.subscriptions.push(favoritosSub);
+      },
+      error: (error) => console.error('Erro ao carregar equipe:', error)
+    });
+    this.subscriptions.push(teamSub);
   }
 
   loadPokemons(): void {
@@ -62,6 +90,12 @@ export class HomeComponent implements OnInit {
               pokemon.stats = details.stats;
             }
           });
+        });
+        
+        // Sincronizar com estado global
+        data.forEach((pokemon: Pokemon) => {
+          pokemon.equipe = this.teamStateService.isInTeam(pokemon.nome);
+          pokemon.favorito = this.teamStateService.isInFavoritos(pokemon.nome);
         });
         
         this.pokemons = data;
@@ -94,11 +128,11 @@ export class HomeComponent implements OnInit {
   }
 
   getFavoritosCount(): number {
-    return this.pokemons.filter(p => p.favorito).length;
+    return this.teamStateService.getFavoritosCount();
   }
 
   getEquipeCount(): number {
-    return this.pokemons.filter(p => p.equipe).length;
+    return this.teamStateService.getTeamCount();
   }
 
   toggleFavorito(pokemon: Pokemon): void {
@@ -119,6 +153,7 @@ export class HomeComponent implements OnInit {
           this.pokemonService.removeFavorito(pokemon.nome).subscribe({
             next: () => {
               pokemon.favorito = false;
+              this.teamStateService.removeFromFavoritos(pokemon.nome);
               this.modalService.showSuccess(`${pokemon.nome} removido dos favoritos!`);
             },
             error: (error) => {
@@ -132,6 +167,7 @@ export class HomeComponent implements OnInit {
       this.pokemonService.addFavorito(request).subscribe({
         next: () => {
           pokemon.favorito = true;
+          this.teamStateService.addToFavoritos(pokemon.nome);
           this.modalService.showSuccess(`${pokemon.nome} adicionado aos favoritos!`);
         },
         error: (error) => {
@@ -160,6 +196,7 @@ export class HomeComponent implements OnInit {
           this.pokemonService.removeEquipe(pokemon.nome).subscribe({
             next: () => {
               pokemon.equipe = false;
+              this.teamStateService.removeFromTeam(pokemon.nome);
               this.modalService.showSuccess(`${pokemon.nome} removido da equipe!`);
             },
             error: (error) => {
@@ -173,6 +210,7 @@ export class HomeComponent implements OnInit {
       this.pokemonService.addEquipe(request).subscribe({
         next: () => {
           pokemon.equipe = true;
+          this.teamStateService.addToTeam(pokemon.nome);
           this.modalService.showSuccess(`${pokemon.nome} adicionado à equipe!`);
         },
         error: (error) => {

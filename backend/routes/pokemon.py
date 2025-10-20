@@ -75,12 +75,31 @@ def listar_pokemons():
                 result.append(enrich(poke_data))
         return jsonify(result), 200
     
-    # Filtro por nome específico
+    # Filtro por nome (busca parcial)
     if nome:
-        poke_resp = requests.get(f"{POKEAPI_URL}/{nome.lower()}")
-        if poke_resp.status_code == 200:
-            poke_data = poke_resp.json()
-            return jsonify([enrich(poke_data)]), 200
+        # Buscar uma lista maior de Pokémon para fazer busca parcial
+        search_params = {'limit': 1000, 'offset': 0}  # Buscar mais Pokémon para filtrar
+        search_resp = requests.get(POKEAPI_URL, params=search_params)
+        
+        if search_resp.status_code == 200:
+            search_data = search_resp.json()
+            # Filtrar Pokémon que contêm o termo de busca no nome
+            matching_pokemon = []
+            for poke in search_data['results']:
+                if nome.lower() in poke['name'].lower():
+                    matching_pokemon.append(poke)
+            
+            # Aplicar paginação aos resultados filtrados
+            paginated_results = matching_pokemon[offset:offset+limit]
+            
+            result = []
+            for poke in paginated_results:
+                poke_resp = requests.get(poke['url'])
+                if poke_resp.status_code == 200:
+                    poke_data = poke_resp.json()
+                    result.append(enrich(poke_data))
+            
+            return jsonify(result), 200
         else:
             return jsonify([]), 200
     

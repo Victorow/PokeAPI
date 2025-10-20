@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { PokemonCardComponent } from '../pokemon-card/pokemon-card.component';
 import { PokemonService } from '../../services/pokemon.service';
 import { ModalService } from '../../services/modal.service';
+import { TeamStateService } from '../../services/team-state.service';
 import { Pokemon } from '../../models/pokemon.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-equipe',
@@ -14,19 +16,25 @@ import { Pokemon } from '../../models/pokemon.model';
   templateUrl: './equipe.component.html',
   styleUrls: ['./equipe.component.css']
 })
-export class EquipeComponent implements OnInit {
+export class EquipeComponent implements OnInit, OnDestroy {
   equipe: Pokemon[] = [];
   isLoading = false;
   errorMessage = '';
   maxEquipe = 6;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private pokemonService: PokemonService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private teamStateService: TeamStateService
   ) {}
 
   ngOnInit(): void {
     this.loadEquipe();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   loadEquipe(): void {
@@ -72,6 +80,7 @@ export class EquipeComponent implements OnInit {
     this.pokemonService.addFavorito(request).subscribe({
       next: () => {
         pokemon.favorito = true;
+        this.teamStateService.addToFavoritos(pokemon.nome);
         this.modalService.showSuccess(`${pokemon.nome} adicionado aos favoritos!`);
       },
       error: (error) => {
@@ -92,6 +101,7 @@ export class EquipeComponent implements OnInit {
         this.pokemonService.removeEquipe(pokemon.nome).subscribe({
           next: () => {
             this.equipe = this.equipe.filter(p => p.nome !== pokemon.nome);
+            this.teamStateService.removeFromTeam(pokemon.nome);
             this.modalService.showSuccess(`${pokemon.nome} removido da equipe!`);
           },
           error: (error) => {
