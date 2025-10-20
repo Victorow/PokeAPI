@@ -11,9 +11,6 @@
       <span class="icon">👤</span>
       <span class="text">Total de usuários: <strong>{{ usuarios.length }}</strong></span>
     </div>
-    <a routerLink="/reset-senha" class="btn-reset-senha">
-      🔑 Resetar Senha
-    </a>
   </div>
 
   <div *ngIf="isLoading" class="loading">
@@ -53,14 +50,6 @@
           <td>{{ usuario.login }}</td>
           <td>{{ usuario.email }}</td>
           <td class="actions-column">
-            <button 
-              class="btn-reset" 
-              (click)="resetarSenha(usuario.id, usuario.nome)"
-              [disabled]="usuario.id === currentUser?.id"
-              title="Resetar senha"
-            >
-              🔑 Resetar Senha
-            </button>
             <button 
               class="btn-delete" 
               (click)="deletarUsuario(usuario.id, usuario.nome)"

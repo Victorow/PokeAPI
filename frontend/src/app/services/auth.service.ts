@@ -75,15 +75,4 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/auth/change-password`, passwordData, { headers });
   }
 
-  adminResetPassword(userId: number, novaSenha: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.getToken()}`
-    });
-    
-    return this.http.post(`${this.apiUrl}/auth/admin/reset-password`, {
-      userId: userId,
-      novaSenha: novaSenha
-    }, { headers });
-  }
 }
